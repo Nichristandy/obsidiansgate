@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login & User Code</title>
+    <!-- Google Fonts - 'Orbitron' for a techy/futuristic look, similar to the image -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for Orbitron font and general body styling */
+        body {
+            font-family: 'Orbitron', sans-serif; /* Changed font to Orbitron */
+            /* Background image styles */
+            background-image: url('Invitation.png'); /* Set your image as background */
+            background-size: cover; /* Cover the entire viewport */
+            background-position: center; /* Center the background image */
+            background-repeat: no-repeat; /* Do not repeat the image */
+            background-attachment: fixed; /* Make the background fixed when scrolling */
+            /* Fallback background color if image fails to load or for better contrast */
+            background-color: #f3f4f6;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        /* Custom modal styles for messages */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1001; /* Slightly increased z-index for absolute certainty */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Slightly darker overlay */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #222; /* Dark background for modal content */
+            color: #eee; /* Light text for general messages within modal */
+            /* Adding a subtle texture using repeating linear gradient */
+            background-image: repeating-linear-gradient(
+                45deg,
+                rgba(0,0,0,.1) 0px,
+                rgba(0,0,0,.1) 1px,
+                transparent 1px,
+                transparent 5px
+            );
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25); /* Slightly stronger shadow */
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            border: 1px solid #444; /* Darker border for dark theme */
+        }
+        .modal-content .close-button { /* Ensure close button is visible on dark background */
+            color: #ddd;
+        }
+        .modal-content .close-button:hover,
+        .modal-content .close-button:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Login Section specific styles to match the new design */
+        #login-section-container { /* New container for the login form to apply background */
+            background-color: #1a1a1a; /* Very dark background fallback */
+            /* Textured background using the provided image */
+            background-image: url('scratched-metal-texture.jpg');
+            background-size: cover; /* Cover the container */
+            background-position: center; /* Center the texture */
+            background-repeat: no-repeat; /* Do not repeat the texture */
+
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            padding: 40px; /* Increased padding */
+            width: 100%;
+            max-width: 450px; /* Slightly wider to accommodate design */
+            border: 1px solid #444; /* Subtle border */
+
+            /* Animation for the login modal page */
+            animation: fadeInScale 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        #login-section h2 {
+            color: #ff3333; /* Red text for headings */
+            line-height: 1.3;
+            margin-bottom: 1.5rem; /* Adjusted spacing */
+            text-shadow: 0 0 8px rgba(255,51,51,0.5); /* Subtle glow */
+        }
+
+        #login-section .smaller-text { /* New class for the smaller text */
+            font-size: 1rem; /* Adjusted from 2rem (32px) to 24px */
+            margin-bottom: 0.5rem; /* Less spacing below it */
+        }
+
+        #login-section .larger-text { /* New class for the larger text (VERIFY YOUR IDENTITY) */
+            font-size: 2rem; /* Adjusted from 3rem (48px) to 40px */
+            margin-bottom: 2rem; /* Ensure good spacing below */
+        }
+
+        #login-form label {
+            color: #ff3333; /* Red text for labels */
+            font-size: 1rem; /* Adjusted from 1.25rem (20px) to 16px */
+            text-transform: uppercase; /* Uppercase labels */
+            letter-spacing: 0.05em; /* Spaced out letters */
+        }
+
+        #login-form input {
+            background-color: rgba(0,0,0,0.3); /* Transparent dark input background */
+            border: 1px solid #ff3333; /* Red border for inputs */
+            color: #eee; /* Light text for input values */
+            padding: 0.75rem 1rem; /* Adjusted padding */
+            border-radius: 6px; /* Slightly less rounded */
+            box-shadow: inset 0 0 5px rgba(255,51,51,0.2); /* Inner glow */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        #login-form input:focus {
+            border-color: #ff6666; /* Lighter red on focus */
+            box-shadow: inset 0 0 8px rgba(255,102,102,0.4), 0 0 10px rgba(255,102,102,0.6); /* Stronger glow on focus */
+            outline: none; /* Remove default outline */
+        }
+
+        #login-form button {
+            background-color: #ff3333; /* Red button background */
+            color: #fff; /* White text on button */
+            font-weight: 700; /* Bold font */
+            letter-spacing: 0.08em; /* Spaced out letters */
+            text-transform: uppercase; /* Uppercase button text */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 5px 15px rgba(255,51,51,0.4); /* Red glow shadow */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+        }
+        #login-form button:hover {
+            background-color: #ff6666; /* Lighter red on hover */
+            box-shadow: 0 8px 20px rgba(255,102,102,0.6); /* Stronger glow on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+        }
+        #login-form button:active {
+            transform: translateY(0); /* Press down effect */
+            box-shadow: 0 2px 5px rgba(255,51,51,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Container for the entire application -->
+    <div id="login-section-container"> <!-- New container for the login form -->
+        <!-- Login Section -->
+        <div id="login-section">
+            <h2 class="font-bold text-center smaller-text">
+                THE OBSIDIANS GATE IS LOCKED.<br>ONLY THOSE CLEARED BY HQ MAY PASS.
+            </h2>
+            <h2 class="font-bold text-center larger-text">
+                VERIFY YOUR IDENTITY
+            </h2>
+
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label for="username" class="block mb-1">USERNAME</label>
+                    <input type="text" id="username" name="username" required
+                           class="mt-1 block w-full">
+                </div>
+                <div>
+                    <label for="password" class="block mb-1">PASSWORD</label>
+                    <input type="password" id="password" name="password" required
+                           class="mt-1 block w-full">
+                </div>
+                <div id="error-message" class="text-red-600 text-sm text-center font-medium hidden"></div>
+                <button type="submit" class="w-full flex justify-center py-3 px-4">
+                    LOG IN
+                </button>
+            </form>
+        </div>
+
+        <!-- This section is now hidden by default and its content is moved to the modal -->
+        <div id="code-display-section" class="hidden"></div>
+    </div>
+
+    <!-- Custom Modal for messages and code display -->
+    <div id="message-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-modal-button">&times;</span>
+            <p id="modal-general-message" class="text-lg font-semibold text-gray-200 mb-4"></p> <!-- Adjusted text color for dark background -->
+
+            <!-- Container for code display within modal -->
+            <div id="modal-code-container" class="hidden">
+                <p class="text-gray-400 mb-2">Your secret code is:</p> <!-- Adjusted text color for dark background -->
+                <div class="bg-black p-4 rounded-lg shadow-md mb-6">
+                    <p id="modal-display-user-code" class="text-red-500 text-2xl font-bold tracking-wider"></p>
+                </div>
+            </div>
+
+            <button id="modal-ok-button"
+                    class="mt-6 py-2 px-6 bg-stone-700 text-white rounded-lg hover:bg-stone-800 transition duration-200 ease-in-out">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- User Database (JSON) ---
+        let users = [];
+
+// Fetch user data from uname.json
+fetch('uname.json')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to load user data');
+    }
+    return response.json();
+  })
+  .then(data => {
+    // Map keys to expected format (username, password, code)
+    users = data.map(entry => ({
+      username: entry.Username,
+      password: entry.Password,
+      code: entry.Result
+    }));
+    console.log("User data loaded successfully:", users);
+  })
+  .catch(error => {
+    console.error("Error loading user data:", error);
+    showModal('message', 'Failed to load user data. Please try again later.');
+  });
+
+  
+
+        // --- DOM Elements ---
+        const loginSection = document.getElementById('login-section');
+        const codeDisplaySection = document.getElementById('code-display-section'); // Kept for consistency, but now hidden
+        const loginForm = document.getElementById('login-form');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('error-message');
+
+        // Modal elements
+        const messageModal = document.getElementById('message-modal');
+        const modalGeneralMessage = document.getElementById('modal-general-message'); // Renamed for clarity
+        const modalCodeContainer = document.getElementById('modal-code-container'); // New container for code
+        const modalDisplayUserCode = document.getElementById('modal-display-user-code'); // New element for code inside modal
+        const closeModalButton = document.getElementById('close-modal-button');
+        const modalOkButton = document.getElementById('modal-ok-button');
+
+        // --- Utility Functions ---
+
+        /**
+         * Displays a custom modal message or code display to the user.
+         * @param {string} type - 'message' for general messages, 'code' for displaying user code after login.
+         * @param {string} content - The message text (for 'message' type) or username (for 'code' type).
+         * @param {string} [code] - The secret code (only required for 'code' type).
+         */
+        function showModal(type, content, code = '') {
+            console.log("showModal called. Type:", type, "Content:", content, "Code:", code);
+
+            // Reset visibility of modal content elements
+            modalGeneralMessage.classList.add('hidden');
+            modalCodeContainer.classList.add('hidden');
+
+            if (type === 'message') {
+                modalGeneralMessage.textContent = content;
+                modalGeneralMessage.classList.remove('hidden');
+            } else if (type === 'code') {
+                modalGeneralMessage.textContent = `Authentication Complete. Your target awaits. Good luck, Agent.`;
+                modalGeneralMessage.classList.remove('hidden');
+                modalDisplayUserCode.textContent = code;
+                modalCodeContainer.classList.remove('hidden');
+            }
+
+            messageModal.style.display = 'flex'; // Make the modal visible
+            console.log("Modal display set to 'flex'. Current display:", messageModal.style.display);
+        }
+
+        /**
+         * Hides the custom modal.
+         */
+        function hideModal() {
+            messageModal.style.display = 'none';
+        }
+
+        /**
+         * Handles the login process.
+         * @param {Event} event - The form submission event.
+         */
+        function handleLogin(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            // Find user in our "database"
+            const foundUser = users.find(user => user.username === username && user.password === password);
+
+            if (foundUser) {
+                // Successful login
+                errorMessage.classList.add('hidden'); // Hide any previous error messages
+                loginSection.classList.add('hidden'); // Hide login form
+
+                console.log("Login successful. Calling showModal with 'code' type.");
+                showModal('code', foundUser.username, foundUser.code); // Show modal with code
+            } else {
+                // Failed login
+                errorMessage.textContent = "Invalid username or password. Please try again.";
+                errorMessage.classList.remove('hidden');
+                console.log("Login failed. Calling showModal with 'message' type.");
+                showModal('message', "Invalid username or password. Please try again.");
+            }
+        }
+
+        /**
+         * Handles the logout process.
+         */
+        function handleLogout() {
+            loginSection.classList.remove('hidden'); // Show login form
+            usernameInput.value = ''; // Clear username input
+            passwordInput.value = ''; // Clear password input
+            errorMessage.classList.add('hidden'); // Ensure error message is hidden
+            console.log("Logout successful. Calling showModal with 'message' type.");
+            showModal('message', "You have been successfully logged out.");
+        }
+
+        // --- Event Listeners ---
+        loginForm.addEventListener('submit', handleLogin);
+
+        // Modal event listeners
+        closeModalButton.addEventListener('click', () => {
+            hideModal();
+            // If the modal was showing the code, clicking close means they've acknowledged,
+            // and we should log them out to return to the login screen.
+            if (!modalCodeContainer.classList.contains('hidden')) { // Check if code was displayed
+                handleLogout();
+            }
+        });
+
+        modalOkButton.addEventListener('click', () => {
+             hideModal();
+             // If the modal was showing the code, clicking OK means they've acknowledged,
+             // and we should log them out to return to the login screen.
+             if (!modalCodeContainer.classList.contains('hidden')) { // Check if code was displayed
+                 handleLogout();
+             }
+        });
+
+        // Close modal if clicking outside content
+        messageModal.addEventListener('click', (event) => {
+            if (event.target === messageModal) {
+                hideModal();
+                // If the modal was showing the code, then clicking outside means they've acknowledged,
+                // and we should log them out to return to the login screen.
+                if (!modalCodeContainer.classList.contains('hidden')) { // Check if code was displayed
+                    handleLogout();
+                }
+            }
+        });
+
+        // Optional: Pre-fill for testing (remove in production)
+        // usernameInput.value = "user1";
+        // passwordInput.value = "password1";
+
+    </script>
+</body>
+</html>
