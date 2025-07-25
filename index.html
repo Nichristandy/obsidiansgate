@@ -162,11 +162,30 @@
             transform: translateY(0); /* Press down effect */
             box-shadow: 0 2px 5px rgba(255,51,51,0.3);
         }
+
+        @keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
     </style>
 </head>
 <body>
 
     <!-- Main Container for the entire application -->
+     <!-- Entrance Animation Screen -->
+<div id="intro-screen" class="fixed inset-0 flex justify-center items-center bg-black text-white text-center z-50">
+    <h1 id="intro-text" class="text-2xl md:text-4xl px-6 leading-relaxed opacity-0">
+        You’re here. That’s step one.<br>Step two: become who you were meant to be.
+    </h1>
+</div>
+
     <div id="login-section-container"> <!-- New container for the login form -->
         <!-- Login Section -->
         <div id="login-section">
@@ -378,6 +397,31 @@ fetch('uname.json')
         // Optional: Pre-fill for testing (remove in production)
         // usernameInput.value = "user1";
         // passwordInput.value = "password1";
+        window.addEventListener('DOMContentLoaded', () => {
+    const introScreen = document.getElementById('intro-screen');
+    const introText = document.getElementById('intro-text');
+    const loginContainer = document.getElementById('login-section-container');
+
+    // Step 1: Animate text in
+    introText.style.animation = 'fadeInUp 1.5s ease forwards';
+    introText.style.opacity = 1;
+
+    // Step 2: Wait, then transition to login
+    setTimeout(() => {
+        introScreen.style.transition = 'opacity 1s ease';
+        introScreen.style.opacity = 0;
+
+        setTimeout(() => {
+            introScreen.style.display = 'none';
+            loginContainer.style.opacity = 0;
+            loginContainer.style.display = 'block';
+            loginContainer.style.transition = 'opacity 1s ease';
+            setTimeout(() => {
+                loginContainer.style.opacity = 1;
+            }, 50);
+        }, 1000);
+    }, 5000); // show intro for 3 seconds
+});
 
     </script>
 </body>
