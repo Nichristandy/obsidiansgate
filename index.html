@@ -10,25 +10,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles for Orbitron font and general body styling */
-        body {
-            font-family: 'Orbitron', sans-serif; /* Changed font to Orbitron */
-            /* Background image styles */
-            background-image: url('Invitation.png'); /* Set your image as background */
-            background-size: cover; /* Cover the entire viewport */
-            background-position: center; /* Center the background image */
-            background-repeat: no-repeat; /* Do not repeat the image */
-            background-attachment: fixed; /* Make the background fixed when scrolling */
-            /* Fallback background color if image fails to load or for better contrast */
-            background-color: #f3f4f6;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+       body {
+    font-family: 'Orbitron', sans-serif;
+    background-image: url('new-main-background.jpeg'); /* LOGIN PAGE BG */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    transition: background-image 1s ease-in-out; /* Smooth change */
+}
         /* Custom modal styles for messages */
         .modal {
             display: none; /* Hidden by default */
@@ -63,6 +61,22 @@
             position: relative;
             border: 1px solid #444; /* Darker border for dark theme */
         }
+        /* Good Side modal aesthetic */
+.modal-content.good-side {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 0 20px rgba(255,255,255,0.7),
+                0 0 50px rgba(200,200,255,0.3);
+}
+
+/* Villain modal aesthetic */
+.modal-content.villain-side {
+    background-color: rgba(30,0,0,0.7);
+    border: 1px solid rgba(255,0,0,0.4);
+    box-shadow: 0 0 25px rgba(255,0,0,0.6),
+                0 0 60px rgba(139,0,0,0.4);
+}
         .modal-content .close-button { /* Ensure close button is visible on dark background */
             color: #ddd;
         }
@@ -74,24 +88,19 @@
         }
 
         /* Login Section specific styles to match the new design */
-        #login-section-container { /* New container for the login form to apply background */
-            background-color: #1a1a1a; /* Very dark background fallback */
-            /* Textured background using the provided image */
-            background-image: url('scratched-metal-texture.jpg');
-            background-size: cover; /* Cover the container */
-            background-position: center; /* Center the texture */
-            background-repeat: no-repeat; /* Do not repeat the texture */
+        #login-section-container {
+    background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent dark */
+    backdrop-filter: blur(10px);          /* Glass blur effect */
+    -webkit-backdrop-filter: blur(10px);  /* For Safari support */
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle glass border */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    animation: fadeInScale 0.8s ease-out forwards;
+}
 
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            padding: 40px; /* Increased padding */
-            width: 100%;
-            max-width: 450px; /* Slightly wider to accommodate design */
-            border: 1px solid #444; /* Subtle border */
-
-            /* Animation for the login modal page */
-            animation: fadeInScale 0.8s ease-out forwards;
-        }
 
         @keyframes fadeInScale {
             from {
@@ -173,6 +182,48 @@
         transform: translateY(0);
     }
 }
+/* Glowing text for Good Side */
+.glow-good {
+    color: white;
+    text-shadow: 0 0 10px rgba(255,255,255,0.8),
+                 0 0 20px rgba(200,200,255,0.6),
+                 0 0 30px rgba(200,200,255,0.5);
+}
+
+/* Devilish red glow for Villain */
+.glow-villain {
+    color: #ff0000;
+    text-shadow: 0 0 10px rgba(255,0,0,0.8),
+                 0 0 25px rgba(139,0,0,0.6),
+                 0 0 35px rgba(100,0,0,0.8);
+}
+
+/* Smooth fade-out for modal */
+.modal.fade-out {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+@keyframes smoothLoginAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    60% {
+        opacity: 0.8;
+        transform: translateY(0) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Class to trigger the animation */
+.login-appear {
+    animation: smoothLoginAppear 1.2s ease forwards;
+}
+
 
     </style>
 </head>
@@ -181,9 +232,7 @@
     <!-- Main Container for the entire application -->
      <!-- Entrance Animation Screen -->
 <div id="intro-screen" class="fixed inset-0 flex justify-center items-center bg-black text-white text-center z-50">
-    <h1 id="intro-text" class="text-2xl md:text-4xl px-6 leading-relaxed opacity-0">
-        You’re here. That’s step one.<br>Step two: become who you were meant to be.
-    </h1>
+  <h1 id="intro-text" class="text-xl md:text-3xl leading-relaxed text-center max-w-3xl opacity-0 whitespace-pre-line"></h1>
 </div>
 
     <div id="login-section-container"> <!-- New container for the login form -->
@@ -226,11 +275,11 @@
 
             <!-- Container for code display within modal -->
             <div id="modal-code-container" class="hidden">
-                <p class="text-gray-400 mb-2">Your secret code is:</p> <!-- Adjusted text color for dark background -->
+                <p class="text-gray-400 mb-2">You are on the:</p> Adjusted text color for dark background
                 <div class="bg-black p-4 rounded-lg shadow-md mb-6">
                     <p id="modal-display-user-code" class="text-red-500 text-2xl font-bold tracking-wider"></p>
                 </div>
-            </div>
+            </div> 
 
             <button id="modal-ok-button"
                     class="mt-6 py-2 px-6 bg-stone-700 text-white rounded-lg hover:bg-stone-800 transition duration-200 ease-in-out">
@@ -240,11 +289,18 @@
     </div>
 
     <script>
+
+        const roleMessages = {
+    good: `Obsidians The Good Side:\nYou made it. One of the few we can trust.\nThe mission starts now.`,
+    villain: `You're not Obsidians, but the Villain:\nWelcome, asset. You didn’t choose this.\nBut the syndicate owns you now - The Marionettist`
+};
+
+
         // --- User Database (JSON) ---
         let users = [];
 
 // Fetch user data from uname.json
-fetch('uname.json')
+fetch('uname2.json')
   .then(response => {
     if (!response.ok) {
       throw new Error('Failed to load user data');
@@ -256,7 +312,8 @@ fetch('uname.json')
     users = data.map(entry => ({
       username: entry.Username,
       password: entry.Password,
-      code: entry.Result
+      code: entry.Result,
+      role : entry.Roles || 'user' // Default to 'user' if role is not provided
     }));
     console.log("User data loaded successfully:", users);
   })
@@ -291,33 +348,67 @@ fetch('uname.json')
          * @param {string} content - The message text (for 'message' type) or username (for 'code' type).
          * @param {string} [code] - The secret code (only required for 'code' type).
          */
-        function showModal(type, content, code = '') {
-            console.log("showModal called. Type:", type, "Content:", content, "Code:", code);
+        function showModal(type, content, code = '', role = '') {
+    // Reset modal state
+    modalGeneralMessage.classList.add('hidden');
+    modalCodeContainer.classList.add('hidden');
 
-            // Reset visibility of modal content elements
-            modalGeneralMessage.classList.add('hidden');
-            modalCodeContainer.classList.add('hidden');
+    const modalCard = messageModal.querySelector('.modal-content');
+    modalCard.classList.remove('good-side', 'villain-side');
+    modalGeneralMessage.classList.remove('glow-good', 'glow-villain');
 
-            if (type === 'message') {
-                modalGeneralMessage.textContent = content;
-                modalGeneralMessage.classList.remove('hidden');
-            } else if (type === 'code') {
-                modalGeneralMessage.textContent = `Authentication Complete. Your target awaits. Good luck, Agent.`;
-                modalGeneralMessage.classList.remove('hidden');
-                modalDisplayUserCode.textContent = code;
-                modalCodeContainer.classList.remove('hidden');
-            }
+    if (type === 'message') {
+        modalGeneralMessage.textContent = content;
+        modalGeneralMessage.classList.remove('hidden');
+    } 
+    else if (type === 'code') {
+        // Determine if this is Good Side or Villain
+        const isGood = role.toLowerCase().includes('good');
 
-            messageModal.style.display = 'flex'; // Make the modal visible
-            console.log("Modal display set to 'flex'. Current display:", messageModal.style.display);
+        // Role-based cinematic messages
+        const roleMessages = {
+            good: `Obsidians The Good Side:\nYou made it. One of the few we can trust.\nThe mission starts now.`,
+            villain: `You're not Obsidians, but the Villain:\nWelcome, asset. You didn’t choose this.\nBut the syndicate owns you now - The Marionettist`
+        };
+
+        // Set modal text based on role
+        modalGeneralMessage.textContent = isGood ? roleMessages.good : roleMessages.villain;
+        modalGeneralMessage.classList.remove('hidden');
+
+        // Apply background + modal/card + glowing text
+        if (isGood) {
+            document.body.style.backgroundImage = "url('role-background.jpeg')";
+            modalCard.classList.add('good-side');
+            modalGeneralMessage.classList.add('glow-good');
+        } else {
+            document.body.style.backgroundImage = "url('role-background.jpeg')";
+            modalCard.classList.add('villain-side');
+            modalGeneralMessage.classList.add('glow-villain');
         }
+    }
+
+    // Show the modal
+    messageModal.style.display = 'flex';
+}
+
+
+
 
         /**
          * Hides the custom modal.
          */
-        function hideModal() {
-            messageModal.style.display = 'none';
-        }
+       function hideModal(callback) {
+    // Add fade-out class
+    messageModal.classList.add('fade-out');
+
+    // Wait for animation to finish (0.8s)
+    setTimeout(() => {
+        messageModal.style.display = 'none';
+        messageModal.classList.remove('fade-out'); // Reset for next show
+        if (callback) callback(); // Run callback after modal fully hidden
+    }, 800);
+}
+
 
         /**
          * Handles the login process.
@@ -331,15 +422,12 @@ fetch('uname.json')
 
             // Find user in our "database"
             const foundUser = users.find(user => user.username === username && user.password === password);
-
-            if (foundUser) {
-                // Successful login
-                errorMessage.classList.add('hidden'); // Hide any previous error messages
-                loginSection.classList.add('hidden'); // Hide login form
-
-                console.log("Login successful. Calling showModal with 'code' type.");
-                showModal('code', foundUser.username, foundUser.code); // Show modal with code
-            } else {
+if (foundUser) {
+    errorMessage.classList.add('hidden');
+    loginSection.classList.add('hidden');
+    showModal('code', foundUser.username, '', foundUser.role); // no code shown
+}
+else {
                 // Failed login
                 errorMessage.textContent = "Invalid username or password. Please try again.";
                 errorMessage.classList.remove('hidden');
@@ -348,80 +436,130 @@ fetch('uname.json')
             }
         }
 
-        /**
-         * Handles the logout process.
-         */
-        function handleLogout() {
-            loginSection.classList.remove('hidden'); // Show login form
-            usernameInput.value = ''; // Clear username input
-            passwordInput.value = ''; // Clear password input
-            errorMessage.classList.add('hidden'); // Ensure error message is hidden
-            console.log("Logout successful. Calling showModal with 'message' type.");
-            showModal('message', "You have been successfully logged out.");
-        }
+    
+function handleLogout() {
+    document.body.style.transition = 'background-image 1s ease-in-out';
+    document.body.style.backgroundImage = "url('new-main-background.jpeg')";
 
-        // --- Event Listeners ---
-        loginForm.addEventListener('submit', handleLogin);
+    // Reset modal visuals
+    const modalCard = messageModal.querySelector('.modal-content');
+    modalCard.classList.remove('good-side', 'villain-side');
+    modalGeneralMessage.classList.remove('glow-good', 'glow-villain');
 
-        // Modal event listeners
-        closeModalButton.addEventListener('click', () => {
-            hideModal();
-            // If the modal was showing the code, clicking close means they've acknowledged,
-            // and we should log them out to return to the login screen.
-            if (!modalCodeContainer.classList.contains('hidden')) { // Check if code was displayed
-                handleLogout();
-            }
+    // Reset login form
+    usernameInput.value = '';
+    passwordInput.value = '';
+    errorMessage.classList.add('hidden');
+
+    // Show login container with the new smooth animation
+    loginSection.classList.remove('hidden');
+    const loginContainer = document.getElementById('login-section-container');
+    loginContainer.style.display = 'block';
+    loginContainer.classList.remove('login-appear'); // reset in case it was triggered before
+
+    // Trigger reflow to restart animation
+    void loginContainer.offsetWidth;
+
+    loginContainer.classList.add('login-appear');
+
+    console.log("Returned to login form with smooth transition.");
+}
+
+
+
+// --- Event Listeners ---
+loginForm.addEventListener('submit', handleLogin);
+
+closeModalButton.addEventListener('click', () => {
+    hideModal(() => {
+        handleLogout(); // Return to login after fade-out
+    });
+});
+
+modalOkButton.addEventListener('click', () => {
+    hideModal(() => {
+        handleLogout();
+    });
+});
+
+messageModal.addEventListener('click', (event) => {
+    if (event.target === messageModal) {
+        hideModal(() => {
+            handleLogout();
         });
+    }
+});
 
-        modalOkButton.addEventListener('click', () => {
-             hideModal();
-             // If the modal was showing the code, clicking OK means they've acknowledged,
-             // and we should log them out to return to the login screen.
-             if (!modalCodeContainer.classList.contains('hidden')) { // Check if code was displayed
-                 handleLogout();
-             }
-        });
 
-        // Close modal if clicking outside content
-        messageModal.addEventListener('click', (event) => {
-            if (event.target === messageModal) {
-                hideModal();
-                // If the modal was showing the code, then clicking outside means they've acknowledged,
-                // and we should log them out to return to the login screen.
-                if (!modalCodeContainer.classList.contains('hidden')) { // Check if code was displayed
-                    handleLogout();
-                }
-            }
-        });
+
 
         // Optional: Pre-fill for testing (remove in production)
         // usernameInput.value = "user1";
         // passwordInput.value = "password1";
-        window.addEventListener('DOMContentLoaded', () => {
-    const introScreen = document.getElementById('intro-screen');
-    const introText = document.getElementById('intro-text');
-    const loginContainer = document.getElementById('login-section-container');
+//         window.addEventListener('DOMContentLoaded', () => {
+//     const introScreen = document.getElementById('intro-screen');
+//     const introText = document.getElementById('intro-text');
+//     const loginContainer = document.getElementById('login-section-container');
 
-    // Step 1: Animate text in
-    introText.style.animation = 'fadeInUp 1.5s ease forwards';
-    introText.style.opacity = 1;
+//     // Step 1: Animate text in
+//     introText.style.animation = 'fadeInUp 1.5s ease forwards';
+//     introText.style.opacity = 1;
 
-    // Step 2: Wait, then transition to login
-    setTimeout(() => {
-        introScreen.style.transition = 'opacity 1s ease';
-        introScreen.style.opacity = 0;
+//     // Step 2: Wait, then transition to login
+//     setTimeout(() => {
+//         introScreen.style.transition = 'opacity 1s ease';
+//         introScreen.style.opacity = 0;
 
+//         setTimeout(() => {
+//             introScreen.style.display = 'none';
+//             loginContainer.style.opacity = 0;
+//             loginContainer.style.display = 'block';
+//             loginContainer.style.transition = 'opacity 1s ease';
+//             setTimeout(() => {
+//                 loginContainer.style.opacity = 1;
+//             }, 50);
+//         }, 1000);
+//     }, 5000); // show intro for 3 seconds
+// });
+
+const introTextElement = document.getElementById('intro-text');
+const introMessage = `Phase Two has begun. This is the moment when we must face the hard truth, traitors are among us, and not everyone is who they claim to be. 
+Trust no one. Loyalties will be tested, and masks will fall. 
+The question is: which side are you on?`;
+
+let index = 0;
+
+function typeWriter() {
+    if (index < introMessage.length) {
+        introTextElement.textContent += introMessage.charAt(index);
+        introTextElement.style.opacity = 1; // fade in text as we type
+        index++;
+        setTimeout(typeWriter, 40); // typing speed in ms (adjust if needed)
+    } else {
+        // Once typing is done, wait and then fade to login
         setTimeout(() => {
-            introScreen.style.display = 'none';
-            loginContainer.style.opacity = 0;
-            loginContainer.style.display = 'block';
-            loginContainer.style.transition = 'opacity 1s ease';
+            document.getElementById('intro-screen').style.transition = 'opacity 2.5s ease';
+            document.getElementById('intro-screen').style.opacity = 0;
+
             setTimeout(() => {
-                loginContainer.style.opacity = 1;
-            }, 50);
-        }, 1000);
-    }, 5000); // show intro for 3 seconds
+                document.getElementById('intro-screen').style.display = 'none';
+                const loginContainer = document.getElementById('login-section-container');
+                loginContainer.style.opacity = 0;
+                loginContainer.style.display = 'block';
+                loginContainer.style.transition = 'opacity 2.5s ease';
+                setTimeout(() => {
+                    loginContainer.style.opacity = 1;
+                }, 50);
+            }, 1000);
+        }, 3000); // Wait 2 seconds after typing ends
+    }
+}
+
+// Start typing effect when DOM is ready
+window.addEventListener('DOMContentLoaded', () => {
+    typeWriter();
 });
+
 
     </script>
 </body>
