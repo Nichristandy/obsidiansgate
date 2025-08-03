@@ -1,10 +1,4 @@
-[{
-    "No.": 0,
-    "Username": "jenniepark",
-    "Result": "raven",
-    "Password": "test123",
-    "Roles":"good side"
-},
+[
  {
    "No.": 1,
    "Username": "ywnzzntxt",
@@ -73,7 +67,7 @@
    "Username": "janerubvjennie",
    "Result": "shade",
    "Password": "deamoresobreker",
-   "Roles": "good side"
+   "Roles": "villain"
  },
  {
    "No.": 11,
@@ -87,7 +81,7 @@
    "Username": "gjselle",
    "Result": "mute",
    "Password": "maxwellrune",
-   "Roles": "villain"
+   "Roles": "good side"
  },
  {
    "No.": 13,
