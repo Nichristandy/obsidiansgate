@@ -1,183 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Login & User Code</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-       body {
-            font-family: 'Orbitron', sans-serif;
-            background-image: url('new-main-background.jpeg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            transition: background-image 1s ease-in-out;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secure Login & User Code</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* ======= Base Aesthetic ======= */
+    :root{
+      --obs-red:#ff3333;
+      --obs-red-soft:#ff6666;
+      --glass: rgba(255,255,255,0.08);
+      --ink: rgba(0,0,0,0.4);
+    }
+    body{
+      font-family:'Orbitron',sans-serif;
+      background-image:url('new-main-background.jpeg');
+      background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:fixed;
+      background-color:#000;
+      display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:20px;box-sizing:border-box;
+      transition:background-image 1s ease-in-out;
+    }
 
-        /* Black transition overlay */
-        #transition-overlay {
-            position: fixed;
-            inset: 0;
-            background: black;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 1000;
-            transition: opacity 0.8s ease;
-        }
+    /* ======= Black transition overlay ======= */
+    #transition-overlay{
+      position:fixed;inset:0;background:black;opacity:0;pointer-events:none;z-index:1000;transition:opacity .8s ease;
+    }
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-            justify-content: center;
-            align-items: center;
-            opacity: 1;
-            transition: opacity 0.8s ease;
-        }
-        .modal.fade-out { opacity: 0; }
+    /* ======= Modal ======= */
+    .modal{display:none;position:fixed;z-index:1001;left:0;top:0;width:100%;height:100%;overflow:auto;
+      background-color:rgba(0,0,0,0.6);justify-content:center;align-items:center;opacity:1;transition:opacity .8s ease;}
+    .modal.fade-out{opacity:0;}
+    .modal-content{
+      background-color:#222;color:#eee;
+      background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.1) 0px,rgba(0,0,0,.1) 1px,transparent 1px,transparent 5px);
+      margin:auto;padding:28px;border-radius:14px;max-width:900px;width:calc(100% - 40px);text-align:center;position:relative;
+      border:1px solid #444;opacity:0;transform:scale(.92);transition:all .8s ease;
+      box-shadow:0 10px 25px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.04) inset;
+    }
+    .modal.show .modal-content{opacity:1;transform:scale(1);}
+    .close-button{
+      position:absolute;top:10px;right:14px;font-size:28px;color:#aaa;cursor:pointer;
+      transition:transform .15s ease, color .2s ease;
+    }
+    .close-button:hover{color:#fff;transform:scale(1.07);}
 
-        .modal-content {
-            background-color: #222;
-            color: #eee;
-            background-image: repeating-linear-gradient(
-                45deg,
-                rgba(0,0,0,.1) 0px,
-                rgba(0,0,0,.1) 1px,
-                transparent 1px,
-                transparent 5px
-            );
-            margin: auto;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-            max-width: 400px;
-            text-align: center;
-            position: relative;
-            border: 1px solid #444;
-            opacity: 0;
-            transform: scale(0.9);
-            transition: all 0.8s ease;
-        }
-        .modal.show .modal-content {
-            opacity: 1;
-            transform: scale(1);
-        }
+    /* ======= Login Panel ======= */
+    #login-section-container{
+      display:none;opacity:0;background-color:rgba(0,0,0,.3);
+      -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+      border-radius:12px;border:1px solid rgba(255,255,255,0.1);
+      box-shadow:0 10px 25px rgba(0,0,0,0.4);
+      padding:40px;width:100%;max-width:460px;
+    }
+    @keyframes smoothLoginAppear{
+      0%{opacity:0;transform:translateY(30px) scale(.95);}
+      60%{opacity:.85;transform:translateY(0) scale(1.02);}
+      100%{opacity:1;transform:translateY(0) scale(1);}
+    }
+    .login-appear{animation:smoothLoginAppear 1.2s ease forwards;}
 
-        .modal-content.good-side {
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255,255,255,0.4);
-            box-shadow: 0 0 20px rgba(255,255,255,0.7),
-                        0 0 50px rgba(200,200,255,0.3);
-        }
+    #login-section h2{
+      color:var(--obs-red);line-height:1.3;margin-bottom:1.5rem;text-shadow:0 0 8px rgba(255,51,51,.5);
+    }
+    #login-section .smaller-text{font-size:1rem;margin-bottom:.5rem;}
+    #login-section .larger-text{font-size:2rem;margin-bottom:2rem;}
 
-        .modal-content.villain-side {
-            background-color: rgba(30,0,0,0.7);
-            border: 1px solid rgba(255,0,0,0.4);
-            box-shadow: 0 0 25px rgba(255,0,0,0.6),
-                        0 0 60px rgba(139,0,0,0.4);
-        }
+    #login-form label{
+      color:var(--obs-red);font-size:1rem;text-transform:uppercase;letter-spacing:.05em;
+    }
+    #login-form input{
+      background-color:rgba(0,0,0,.3);border:1px solid var(--obs-red);color:#eee;padding:.75rem 1rem;border-radius:6px;
+      box-shadow:inset 0 0 5px rgba(255,51,51,.2);transition:border-color .3s ease, box-shadow .3s ease;
+      width:100%;
+    }
+    #login-form input:focus{
+      border-color:var(--obs-red-soft);
+      box-shadow:inset 0 0 8px rgba(255,102,102,.4), 0 0 10px rgba(255,102,102,.6);
+      outline:none;
+    }
+    #login-form button{
+      background-color:var(--obs-red);color:#fff;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:8px;
+      box-shadow:0 5px 15px rgba(255,51,51,.4);transition:background-color .3s ease, box-shadow .3s ease, transform .2s ease;
+      width:100%;padding:.85rem 1rem;
+    }
+    #login-form button:hover{background-color:var(--obs-red-soft);box-shadow:0 8px 20px rgba(255,102,102,.6);transform:translateY(-2px);}
+    #login-form button:active{transform:translateY(0);box-shadow:0 2px 5px rgba(255,51,51,.3);}
 
-        #login-section-container {
-            display: none;
-            opacity: 0;
-            background-color: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            padding: 40px;
-            width: 100%;
-            max-width: 450px;
-        }
+    /* ======= Intro Screen ======= */
+    #intro-screen{z-index:1050;}
+    #intro-text{opacity:0;}
 
-        @keyframes smoothLoginAppear {
-            0% { opacity: 0; transform: translateY(30px) scale(0.95); }
-            60% { opacity: 0.8; transform: translateY(0) scale(1.02); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .login-appear { animation: smoothLoginAppear 1.2s ease forwards; }
+    /* ======= Responsive Profile 3-Card Gallery ======= */
+    #modal-photos{
+      display:grid;gap:16px;margin-top:18px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      align-items:stretch;
+    }
+    .profile-card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.12);border-radius:16px;overflow:hidden;
+      box-shadow:0 10px 24px rgba(0,0,0,0.35), 0 0 30px rgba(255,51,51,0.08);
+      transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+      position:relative; display:flex; flex-direction:column;
+    }
+    .profile-card::after{
+      content:'';position:absolute;inset:0;border-radius:16px;
+      box-shadow:inset 0 0 40px rgba(255,51,51,0.12), inset 0 0 80px rgba(255,51,51,0.06);
+      pointer-events:none;
+    }
+    .profile-card:hover{
+      transform:translateY(-4px);
+      box-shadow:0 16px 34px rgba(0,0,0,0.45), 0 0 40px rgba(255,102,102,0.14);
+      border-color:rgba(255,102,102,0.35);
+    }
+    .profile-photo{
+      display:block;width:100%;height:220px;object-fit:cover;background:#111;cursor:pointer;
+      filter:contrast(1.02) saturate(1.02);
+    }
+    .profile-meta{
+      padding:12px;color:#ddd;text-align:left;
+      display:flex;flex-direction:column;gap:4px;min-height:64px;
+    }
+    .meta-title{font-weight:700;letter-spacing:.04em;color:#fff;}
+    .meta-sub{font-size:.85rem;letter-spacing:.03em;color:#eab0b0;}
+    @media (max-width:480px){ .profile-photo{height:190px;} }
 
-        #login-section h2 {
-            color: #ff3333;
-            line-height: 1.3;
-            margin-bottom: 1.5rem;
-            text-shadow: 0 0 8px rgba(255,51,51,0.5);
-        }
-        #login-section .smaller-text { font-size: 1rem; margin-bottom: 0.5rem; }
-        #login-section .larger-text { font-size: 2rem; margin-bottom: 2rem; }
-
-        #login-form label {
-            color: #ff3333;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        #login-form input {
-            background-color: rgba(0,0,0,0.3);
-            border: 1px solid #ff3333;
-            color: #eee;
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            box-shadow: inset 0 0 5px rgba(255,51,51,0.2);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        #login-form input:focus {
-            border-color: #ff6666;
-            box-shadow: inset 0 0 8px rgba(255,102,102,0.4), 0 0 10px rgba(255,102,102,0.6);
-            outline: none;
-        }
-        #login-form button {
-            background-color: #ff3333;
-            color: #fff;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(255,51,51,0.4);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-        }
-        #login-form button:hover {
-            background-color: #ff6666;
-            box-shadow: 0 8px 20px rgba(255,102,102,0.6);
-            transform: translateY(-2px);
-        }
-        #login-form button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(255,51,51,0.3);
-        }
-
-        .glow-good {
-            color: white;
-            text-shadow: 0 0 10px rgba(255,255,255,0.8),
-                         0 0 20px rgba(200,200,255,0.6),
-                         0 0 30px rgba(200,200,255,0.5);
-        }
-        .glow-villain {
-            color: #ff0000;
-            text-shadow: 0 0 10px rgba(255,0,0,0.8),
-                         0 0 25px rgba(139,0,0,0.6),
-                         0 0 35px rgba(100,0,0,0.8);
-        }
-    </style>
+    /* ======= LIGHTBOX (Large Image View) ======= */
+    #lightbox{
+      position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter: blur(2px);
+      display:none;align-items:center;justify-content:center;z-index:1100;opacity:0;transition:opacity .3s ease;
+    }
+    #lightbox.show{display:flex;opacity:1;}
+    .lightbox-inner{
+      position:relative;max-width:95vw;max-height:90vh;padding:8px;border-radius:14px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.18);
+      box-shadow:0 10px 35px rgba(0,0,0,0.6), 0 0 50px rgba(255,51,51,0.15);
+    }
+    .lightbox-img{
+      display:block;max-width:92vw;max-height:80vh;object-fit:contain;border-radius:10px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.1) inset;
+    }
+    .lightbox-close{
+      position:absolute;top:-12px;right:-12px;background:#111;border:1px solid #444;color:#fff;
+      width:36px;height:36px;border-radius:999px;display:grid;place-items:center;cursor:pointer;
+      box-shadow:0 6px 16px rgba(0,0,0,.45);
+    }
+    .lightbox-nav{
+      position:absolute;top:50%;transform:translateY(-50%);display:flex;gap:8px;width:100%;justify-content:space-between;
+      pointer-events:none;
+    }
+    .nav-btn{
+      pointer-events:auto;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);color:#fff;
+      width:44px;height:56px;border-radius:10px;display:grid;place-items:center;cursor:pointer;
+      user-select:none;font-size:20px;
+    }
+  </style>
 </head>
 <body>
 
@@ -185,61 +165,78 @@
 <div id="transition-overlay"></div>
 
 <!-- Entrance Animation Screen -->
-<div id="intro-screen" class="fixed inset-0 flex justify-center items-center bg-black text-white text-center z-50">
+<div id="intro-screen" class="fixed inset-0 flex justify-center items-center bg-black text-white text-center">
   <h1 id="intro-text" class="text-xl md:text-3xl leading-relaxed text-center max-w-3xl opacity-0 whitespace-pre-line"></h1>
 </div>
 
 <!-- Login Section -->
 <div id="login-section-container">
-    <div id="login-section">
-        <h2 class="font-bold text-center smaller-text">
-            THE OBSIDIANS GATE IS LOCKED.<br>ONLY THOSE CLEARED BY HQ MAY PASS.
-        </h2>
-        <h2 class="font-bold text-center larger-text">
-            VERIFY YOUR IDENTITY
-        </h2>
+  <div id="login-section">
+    <h2 class="font-bold text-center smaller-text">
+      THE OBSIDIANS GATE IS LOCKED.<br/>ONLY THOSE CLEARED BY HQ MAY PASS.
+    </h2>
+    <h2 class="font-bold text-center larger-text">VERIFY YOUR IDENTITY</h2>
 
-        <form id="login-form" class="space-y-5">
-            <div>
-                <label for="username" class="block mb-1">USERNAME</label>
-                <input type="text" id="username" name="username" required class="mt-1 block w-full">
-            </div>
-            <div>
-                <label for="password" class="block mb-1">PASSWORD</label>
-                <input type="password" id="password" name="password" required class="mt-1 block w-full">
-            </div>
-            <div id="error-message" class="text-red-600 text-sm text-center font-medium hidden"></div>
-            <button type="submit" class="w-full flex justify-center py-3 px-4">
-                LOG IN
-            </button>
-        </form>
-    </div>
+    <form id="login-form" class="space-y-5">
+      <div>
+        <label for="username" class="block mb-1">USERNAME</label>
+        <input type="text" id="username" name="username" required/>
+      </div>
+      <div>
+        <label for="password" class="block mb-1">PASSWORD</label>
+        <input type="password" id="password" name="password" required/>
+      </div>
+      <div id="error-message" class="text-red-600 text-sm text-center font-medium hidden"></div>
+      <button type="submit">LOG IN</button>
+    </form>
+  </div>
 </div>
 
 <!-- Modal -->
 <div id="message-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-button" id="close-modal-button">&times;</span>
-        <p id="modal-general-message" class="text-lg font-semibold text-gray-200 mb-4"></p>
-        <div id="modal-code-container" class="hidden"></div>
-        <button id="modal-ok-button"
-                class="mt-6 py-2 px-6 bg-stone-700 text-white rounded-lg hover:bg-stone-800 transition duration-200 ease-in-out">
-            OK
-        </button>
+  <div class="modal-content">
+    <span class="close-button" id="close-modal-button">&times;</span>
+
+    <p id="modal-general-message" class="text-lg font-semibold text-gray-200 mb-2"></p>
+
+    <!-- Responsive gallery -->
+    <div id="modal-photos"></div>
+
+    <button id="modal-ok-button"
+      class="mt-6 py-2 px-6 bg-stone-700 text-white rounded-lg hover:bg-stone-800 transition duration-200 ease-in-out">
+      OK
+    </button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <div class="lightbox-inner">
+    <img id="lightbox-img" class="lightbox-img" alt="Preview"/>
+    <div class="lightbox-nav">
+      <div id="lightbox-prev" class="nav-btn" aria-label="Previous">&#10094;</div>
+      <div id="lightbox-next" class="nav-btn" aria-label="Next">&#10095;</div>
     </div>
+    <div id="lightbox-close" class="lightbox-close" aria-label="Close">&times;</div>
+  </div>
 </div>
 
 <script>
+/* ===================== Data Load ===================== */
 let users = [];
-fetch('uname2.json')
+fetch('obsidians_database.json')
   .then(res => res.json())
   .then(data => {
-    users = data.map(entry => ({
-      username: entry.Username,
-      password: entry.Password,
-      role : entry.Roles || 'user'
+    users = data.map(row => ({
+      username: String(row['USERNAME'] ?? '').trim(),
+      password: String(row['PASSWORD'] ?? '').trim(),
+      name: row['NAME'] ?? '',
+      group: row['GROUP'] ?? '',
+      codename: row['CODENAME'] ?? ''
     }));
   });
+
+/* ===================== DOM Refs ===================== */
 const loginSectionContainer = document.getElementById('login-section-container');
 const loginForm = document.getElementById('login-form');
 const loginSection = document.getElementById('login-section');
@@ -249,131 +246,213 @@ const errorMessage = document.getElementById('error-message');
 
 const messageModal = document.getElementById('message-modal');
 const modalGeneralMessage = document.getElementById('modal-general-message');
-const modalCodeContainer = document.getElementById('modal-code-container');
+const modalPhotos = document.getElementById('modal-photos');
 const closeModalButton = document.getElementById('close-modal-button');
 const modalOkButton = document.getElementById('modal-ok-button');
 
-function cinematicTransition(callback) {
-    const overlay = document.getElementById('transition-overlay');
-    overlay.style.pointerEvents = 'auto';
-    overlay.style.opacity = 1;
-    setTimeout(() => {
-        if (callback) callback();
-        setTimeout(() => {
-            overlay.style.opacity = 0;
-            setTimeout(() => overlay.style.pointerEvents = 'none', 800);
-        }, 800);
-    }, 800);
+/* Lightbox refs */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lbPrev = document.getElementById('lightbox-prev');
+const lbNext = document.getElementById('lightbox-next');
+const lbClose = document.getElementById('lightbox-close');
+
+let lightboxSources = [];
+let lightboxIndex = 0;
+
+/* ===================== Transitions & Modal ===================== */
+function cinematicTransition(callback){
+  const overlay = document.getElementById('transition-overlay');
+  overlay.style.pointerEvents='auto'; overlay.style.opacity=1;
+  setTimeout(()=>{ if(callback) callback();
+    setTimeout(()=>{ overlay.style.opacity=0; setTimeout(()=>overlay.style.pointerEvents='none',800); },800);
+  },800);
 }
 
-function showModal(type, content, code = '', role = '') {
-    modalGeneralMessage.classList.add('hidden');
-    modalCodeContainer.classList.add('hidden');
+function showModal(type, content, _unused='', role=''){
+  modalGeneralMessage.classList.add('hidden');
 
-    const modalCard = messageModal.querySelector('.modal-content');
-    modalCard.classList.remove('good-side', 'villain-side');
-    modalGeneralMessage.classList.remove('glow-good', 'glow-villain');
+  if(type==='message'){
+    modalGeneralMessage.textContent = content;
+    modalGeneralMessage.classList.remove('hidden');
+  }else if(type==='code'){
+    modalGeneralMessage.textContent =
+      `Welcome, ${content}. ${role ? 'Unit: ' + role + '.' : ''} Authorization granted.`;
+    modalGeneralMessage.classList.remove('hidden');
+  }
 
-    if (type === 'message') {
-        modalGeneralMessage.textContent = content;
-        modalGeneralMessage.classList.remove('hidden');
-    } else if (type === 'code') {
-        const isGood = role.toLowerCase().includes('good');
-        modalGeneralMessage.textContent = isGood
-            ? `Obsidians The Good Side:\nYou made it. One of the few we can trust.\nThe mission starts now.`
-            : `You're not Obsidians, but the Villain:\nWelcome, asset. You didn’t choose this.\nBut the syndicate owns you now - The Marionettist`;
-        modalGeneralMessage.classList.remove('hidden');
-        modalCard.classList.add(isGood ? 'good-side' : 'villain-side');
-        modalGeneralMessage.classList.add(isGood ? 'glow-good' : 'glow-villain');
-    }
-
-    messageModal.style.display = 'flex';
-    setTimeout(() => messageModal.classList.add('show'), 10);
+  messageModal.style.display='flex';
+  setTimeout(()=>messageModal.classList.add('show'),10);
+}
+function hideModal(callback){
+  messageModal.classList.remove('show'); messageModal.classList.add('fade-out');
+  setTimeout(()=>{ messageModal.style.display='none'; messageModal.classList.remove('fade-out'); if(callback) callback(); },800);
 }
 
-function hideModal(callback) {
-    messageModal.classList.remove('show');
-    messageModal.classList.add('fade-out');
-    setTimeout(() => {
-        messageModal.style.display = 'none';
-        messageModal.classList.remove('fade-out');
-        if (callback) callback();
-    }, 800);
+/* ===================== Image Resolver (3 picks) ===================== */
+async function resolveUserImages(username){
+  const base = `images/@${username}`;
+  const candidates = [
+    `${base}.png`, `${base}.jpg`,
+    `${base} (2).png`, `${base} (2).jpg`,
+    `${base} (3).png`, `${base} (3).jpg`,
+  ];
+  const tryLoad = (url)=>new Promise(resolve=>{
+    const img = new Image();
+    img.onload=()=>resolve(url);
+    img.onerror=()=>resolve(null);
+    img.src = url + `?v=${Date.now()}`;
+  });
+  const results=[];
+  for(const url of candidates){
+    const ok = await tryLoad(url);
+    if(ok) results.push(ok);
+    if(results.length===3) break;
+  }
+  return results;
 }
 
-function handleLogin(e) {
-    e.preventDefault();
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim();
-    const foundUser = users.find(u => u.username === username && u.password === password);
-
-    if (foundUser) {
-        errorMessage.classList.add('hidden');
-        loginSection.classList.add('hidden');
-        loginSectionContainer.classList.add('hidden');
-
-        cinematicTransition(() => {
-            const isGood = foundUser.role.toLowerCase().includes('good');
-            document.body.style.backgroundImage = isGood
-                ? "url('role-background.jpeg')"
-                : "url('role-background.jpeg')";
-            showModal('code', foundUser.username, '', foundUser.role);
-        });
-    } else {
-        errorMessage.textContent = "Invalid username or password. Please try again.";
-        errorMessage.classList.remove('hidden');
-        showModal('message', "Invalid username or password. Please try again.");
-    }
+/* ===================== Lightbox Controls ===================== */
+function openLightbox(index = 0){
+  if(!lightboxSources.length) return;
+  lightboxIndex = Math.max(0, Math.min(index, lightboxSources.length-1));
+  lightboxImg.src = lightboxSources[lightboxIndex];
+  lightbox.classList.add('show');
+}
+function closeLightbox(){
+  lightbox.classList.remove('show');
+}
+function showNext(){
+  if(!lightboxSources.length) return;
+  lightboxIndex = (lightboxIndex + 1) % lightboxSources.length;
+  lightboxImg.src = lightboxSources[lightboxIndex];
+}
+function showPrev(){
+  if(!lightboxSources.length) return;
+  lightboxIndex = (lightboxIndex - 1 + lightboxSources.length) % lightboxSources.length;
+  lightboxImg.src = lightboxSources[lightboxIndex];
 }
 
-function handleLogout() {
-    cinematicTransition(() => {
-        document.body.style.backgroundImage = "url('new-main-background.jpeg')";
-        usernameInput.value = '';
-        passwordInput.value = '';
-        errorMessage.classList.add('hidden');
+/* Click / keys for lightbox */
+lbClose.addEventListener('click', closeLightbox);
+lbNext.addEventListener('click', showNext);
+lbPrev.addEventListener('click', showPrev);
+lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
+window.addEventListener('keydown', (e)=>{
+  if(!lightbox.classList.contains('show')) return;
+  if(e.key === 'Escape') closeLightbox();
+  if(e.key === 'ArrowRight') showNext();
+  if(e.key === 'ArrowLeft') showPrev();
+});
 
-        const loginContainer = document.getElementById('login-section-container');
-        loginSection.classList.remove('hidden');
-        loginContainer.style.display = 'block';
-        loginContainer.classList.remove('hidden')
-        loginContainer.classList.remove('login-appear');
-        void loginContainer.offsetWidth;
-        loginContainer.classList.add('login-appear');
+/* ===================== Login / Logout ===================== */
+function handleLogin(e){
+  e.preventDefault();
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value.trim();
+  const foundUser = users.find(u => u.username === username && u.password === password);
+
+  if(foundUser){
+    errorMessage.classList.add('hidden');
+    loginSection.classList.add('hidden');
+    loginSectionContainer.classList.add('hidden');
+
+    cinematicTransition(async ()=>{
+      document.body.style.backgroundImage = "url('role-background.jpeg')";
+
+      // Build the responsive gallery
+      modalPhotos.innerHTML = ''; // reset
+      const sources = await resolveUserImages(foundUser.username);
+      lightboxSources = sources.slice(); // for lightbox navigation
+
+      sources.forEach((src, idx)=>{
+        const card = document.createElement('div');
+        card.className = 'profile-card';
+
+        const img = document.createElement('img');
+        img.className = 'profile-photo';
+        img.src = src;
+        img.alt = `Agent ${foundUser.username} photo ${idx+1}`;
+        img.addEventListener('click', ()=>openLightbox(idx));
+
+        const meta = document.createElement('div');
+        meta.className = 'profile-meta';
+        const title = document.createElement('div');
+        title.className = 'meta-title';
+        title.textContent = foundUser.name || foundUser.username;
+        const sub = document.createElement('div');
+        sub.className = 'meta-sub';
+        sub.textContent = `${foundUser.group || 'OBSIDIANS'} · ${foundUser.codename || 'OPERATIVE'}`;
+
+        meta.appendChild(title); meta.appendChild(sub);
+        card.appendChild(img); card.appendChild(meta);
+        modalPhotos.appendChild(card);
+      });
+
+      if(sources.length === 0){
+        const note = document.createElement('div');
+        note.style.color='#ccc';
+        note.style.marginTop='8px';
+        note.textContent = 'No images found for this user.';
+        modalPhotos.appendChild(note);
+      }
+
+      showModal('code', foundUser.username, '', foundUser.group || '');
     });
+
+  }else{
+    errorMessage.textContent = "Invalid username or password. Please try again.";
+    errorMessage.classList.remove('hidden');
+    showModal('message', "Invalid username or password. Please try again.");
+  }
 }
 
-loginForm.addEventListener('submit', handleLogin);
-closeModalButton.addEventListener('click', () => hideModal(handleLogout));
-modalOkButton.addEventListener('click', () => hideModal(handleLogout));
-messageModal.addEventListener('click', e => { if (e.target === messageModal) hideModal(handleLogout); });
+function handleLogout(){
+  cinematicTransition(()=>{
+    document.body.style.backgroundImage = "url('new-main-background.jpeg')";
+    usernameInput.value=''; passwordInput.value=''; errorMessage.classList.add('hidden');
+    const loginContainer = document.getElementById('login-section-container');
+    loginSection.classList.remove('hidden');
+    loginContainer.style.display='block';
+    loginContainer.classList.remove('hidden'); loginContainer.classList.remove('login-appear');
+    void loginContainer.offsetWidth;
+    loginContainer.classList.add('login-appear');
+    // Close lightbox if it was open
+    closeLightbox();
+  });
+}
 
-// Entrance typing effect
+/* ===================== Events ===================== */
+loginForm.addEventListener('submit', handleLogin);
+closeModalButton.addEventListener('click', ()=>hideModal(handleLogout));
+modalOkButton.addEventListener('click', ()=>hideModal(handleLogout));
+messageModal.addEventListener('click', e=>{ if(e.target===messageModal) hideModal(handleLogout); });
+
+/* ===================== Intro Typing ===================== */
 const introTextElement = document.getElementById('intro-text');
 const loginContainer = document.getElementById('login-section-container');
 const introMessage = `Phase Two has begun. This is the moment when we must face the hard truth, traitors are among us, and not everyone is who they claim to be.
 Trust no one. Loyalties will be tested, and masks will fall.
 The question is: which side are you on?`;
-
 let index = 0;
-function typeWriter() {
-    if (index < introMessage.length) {
-        introTextElement.textContent += introMessage.charAt(index);
-        introTextElement.style.opacity = 1;
-        index++;
-        setTimeout(typeWriter, 40);
-    } else {
-        setTimeout(() => {
-            const introScreen = document.getElementById('intro-screen');
-            introScreen.style.transition = 'opacity 2.5s ease';
-            introScreen.style.opacity = 0;
-            setTimeout(() => {
-                introScreen.style.display = 'none';
-                loginContainer.style.display = 'block';
-                loginContainer.classList.add('login-appear');
-            }, 2500);
-        }, 1500);
-    }
+function typeWriter(){
+  if(index < introMessage.length){
+    introTextElement.textContent += introMessage.charAt(index);
+    introTextElement.style.opacity = 1;
+    index++;
+    setTimeout(typeWriter, 40);
+  }else{
+    setTimeout(()=>{
+      const introScreen = document.getElementById('intro-screen');
+      introScreen.style.transition = 'opacity 2.5s ease';
+      introScreen.style.opacity = 0;
+      setTimeout(()=>{
+        introScreen.style.display = 'none';
+        loginContainer.style.display = 'block';
+        loginContainer.classList.add('login-appear');
+      }, 2500);
+    }, 1500);
+  }
 }
 window.addEventListener('DOMContentLoaded', typeWriter);
 </script>
